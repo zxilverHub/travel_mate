@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:travelmate/component/checkinputs.dart';
 import 'package:travelmate/component/gsbg.dart';
 import 'package:travelmate/db/userdb.dart';
+import 'package:travelmate/models/sessions.dart';
 import 'package:travelmate/screens/mainscreen.dart';
 import 'package:travelmate/screens/registration/signup.dart';
 
@@ -271,12 +272,17 @@ class _LoginpageState extends State<Loginpage> {
       return;
     }
 
-    int accId =
-        await User.checkAccount(email: emailCtrl.text, pass: passCtrl.text);
-    if (accId == 0) {
+    var acc =
+        await User.checkAccount(email: emailCtrl.text, pass: passCtrl.text)
+            as Map<String, dynamic>;
+    if (acc == null) {
       showMessage("Icorrect email or password");
       return;
     }
+
+    setState(() {
+      user = acc;
+    });
 
     Navigator.of(context).push(
       MaterialPageRoute(

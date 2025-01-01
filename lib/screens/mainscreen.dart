@@ -34,46 +34,50 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset("assets/images/home/nav-icons/home.png"),
-            activeIcon:
-                Image.asset("assets/images/home/nav-icons/home-active.png"),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset("assets/images/home/nav-icons/destination.png"),
-            activeIcon: Image.asset(
-                "assets/images/home/nav-icons/destination-active.png"),
-            label: 'Destinations',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset("assets/images/home/nav-icons/community.png"),
-            activeIcon: Image.asset(
-                "assets/images/home/nav-icons/community-active.png"),
-            label: 'Community',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset("assets/images/home/nav-icons/notification.png"),
-            activeIcon: Image.asset(
-                "assets/images/home/nav-icons/notification-active.png"),
-            label: 'Notifications',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset("assets/images/home/nav-icons/profile.png"),
-            activeIcon:
-                Image.asset("assets/images/home/nav-icons/profile-active.png"),
-            label: 'Profile',
-          ),
-        ],
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
-        elevation: 10,
-      ),
+      bottomNavigationBar: navigationBar(),
+    );
+  }
+
+  BottomNavigationBar navigationBar() {
+    return BottomNavigationBar(
+      currentIndex: _selectedIndex,
+      onTap: _onItemTapped,
+      items: [
+        BottomNavigationBarItem(
+          icon: Image.asset("assets/images/home/nav-icons/home.png"),
+          activeIcon:
+              Image.asset("assets/images/home/nav-icons/home-active.png"),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Image.asset("assets/images/home/nav-icons/destination.png"),
+          activeIcon: Image.asset(
+              "assets/images/home/nav-icons/destination-active.png"),
+          label: 'Destinations',
+        ),
+        BottomNavigationBarItem(
+          icon: Image.asset("assets/images/home/nav-icons/community.png"),
+          activeIcon:
+              Image.asset("assets/images/home/nav-icons/community-active.png"),
+          label: 'Community',
+        ),
+        BottomNavigationBarItem(
+          icon: Image.asset("assets/images/home/nav-icons/notification.png"),
+          activeIcon: Image.asset(
+              "assets/images/home/nav-icons/notification-active.png"),
+          label: 'Notifications',
+        ),
+        BottomNavigationBarItem(
+          icon: Image.asset("assets/images/home/nav-icons/profile.png"),
+          activeIcon:
+              Image.asset("assets/images/home/nav-icons/profile-active.png"),
+          label: 'Profile',
+        ),
+      ],
+      selectedItemColor: Colors.blue,
+      unselectedItemColor: Colors.grey,
+      backgroundColor: Colors.white,
+      elevation: 10,
     );
   }
 }

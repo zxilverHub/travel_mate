@@ -339,8 +339,13 @@ class _SignUpPageState extends State<SignUpPage> {
       User.imgURL: null,
     });
 
+    var userInfo =
+        await User.checkAccount(email: emailCtrl.text, pass: passwordCtrl.text)
+            as Map<String, dynamic>;
+
     setState(() {
       thisuserid = userid;
+      user = userInfo;
     });
 
     Navigator.of(context).push(

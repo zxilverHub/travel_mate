@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:location/location.dart';
 import 'package:travelmate/component/gsbg.dart';
+import 'package:travelmate/db/userdb.dart';
+import 'package:travelmate/helper/getPlacemarks.dart';
+import 'package:travelmate/helper/locationhelper.dart';
 import 'package:travelmate/models/getstartedmodel.dart';
+import 'package:travelmate/models/sessions.dart';
+import 'package:travelmate/screens/mainscreen.dart';
 import 'package:travelmate/screens/registration/signup.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
@@ -13,22 +19,81 @@ class GetStarted extends StatefulWidget {
 }
 
 class _GetStartedState extends State<GetStarted> {
+  LocationData? myLocData;
+
   bool isStarted = false;
   int index = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getMyLocation();
+  }
+
+  Future getMyLocation() async {
+    Location location = new Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    location.onLocationChanged.listen((LocationData currentLocation) {
+      getPlaceMrk(currentLocation);
+      setState(() {
+        myLocData = currentLocation;
+        locactionData = currentLocation;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      body: myLocData == null ? loadingLocation() : mainBody(),
+    );
+  }
+
+  Center loadingLocation() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          gsBg(!isStarted ? "gsbg" : index),
-          Positioned(
-            left: isStarted ? 12 : 0,
-            right: isStarted ? 12 : 0,
-            bottom: 50,
-            child: !isStarted ? getStartMainScreen() : gsScreens(),
-          ),
+          CircularProgressIndicator(),
+          Gap(12),
+          Text("Getting location..."),
         ],
       ),
+    );
+  }
+
+  Stack mainBody() {
+    return Stack(
+      children: [
+        gsBg(!isStarted ? "gsbg" : index),
+        Positioned(
+          left: isStarted ? 12 : 0,
+          right: isStarted ? 12 : 0,
+          bottom: 50,
+          child: !isStarted ? getStartMainScreen() : gsScreens(),
+        ),
+      ],
     );
   }
 
@@ -147,10 +212,22 @@ class _GetStartedState extends State<GetStarted> {
     );
   }
 
-  void manageStart() {
-    setState(() {
-      isStarted = true;
-    });
+  void manageStart() async {
+    // remove this Navigator and uncomment the setState
+    thisuserid = 1;
+    user = await User.checkAccount(email: "user1@gmail.com", pass: "12345678");
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MainScreen(),
+      ),
+    );
+
+    return;
+
+    // setState(() {
+    //   isStarted = true;
+    // });
   }
 
   void manageNext() {

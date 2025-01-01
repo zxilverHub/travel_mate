@@ -26,7 +26,7 @@ class User {
     return users.isNotEmpty;
   }
 
-  static Future<int> checkAccount(
+  static Future checkAccount(
       {required String email, required String pass}) async {
     var db = await TravelMateDb.openDb();
     var users = await db.query(
@@ -36,9 +36,9 @@ class User {
     );
 
     if (users.isEmpty) {
-      return 0;
+      return null;
     }
 
-    return users.first[User.userId] as int;
+    return users.first;
   }
 }

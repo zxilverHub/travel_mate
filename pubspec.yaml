@@ -37,6 +37,8 @@ dependencies:
   sqflite: ^2.4.1
   path: ^1.9.0
   gap: ^3.0.1
+  location: ^7.0.1
+  geocoding: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +66,7 @@ flutter:
     - assets/images/
     - assets/images/gs/
     - assets/images/home/
+    - assets/images/app/
     - assets/images/registration/
     - assets/images/home/sign/
     - assets/images/home/nav-icons/
