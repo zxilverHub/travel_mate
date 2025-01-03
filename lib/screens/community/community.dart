@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:travelmate/db/chatcontentdb.dart';
 import 'package:travelmate/db/communitydb.dart';
 import 'package:travelmate/db/cornerdb.dart';
+import 'package:travelmate/db/privatechatdb.dart';
+import 'package:travelmate/db/userdb.dart';
 import 'package:travelmate/models/sessions.dart';
 import 'package:travelmate/screens/community/cornerscreen.dart';
 import 'package:travelmate/screens/community/groupchat.dart';
+import 'package:travelmate/screens/community/privatechatscreen.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
 class CommunityScreen extends StatefulWidget {
@@ -53,43 +59,189 @@ class _CommunityScreenState extends State<CommunityScreen> {
     );
   }
 
-  Expanded userPrivateChats() {
-    return Expanded(
-      child: ListView.builder(
-        padding: EdgeInsets.all(0),
-        itemCount: 2,
-        itemBuilder: (_, i) {
-          return Padding(
-            padding: const EdgeInsets.only(
-              bottom: 12,
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+  Widget userPrivateChats() {
+    return FutureBuilder(
+      future: PrivateChat.fetchAllUserPrivateChats(userid: user![User.userId]),
+      builder: (_, s) {
+        if (s.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (s.connectionState == ConnectionState.done) {
+          if (s.hasData && s.data != null) {
+            final privateChats = s.data as List;
+            if (privateChats.isNotEmpty) {
+              return Expanded(
+                child: ListView.builder(
+                  padding: EdgeInsets.all(0),
+                  itemCount: privateChats.length,
+                  itemBuilder: (_, i) {
+                    final pchat = privateChats[i];
+                    return GestureDetector(
+                      onTap: () => managePrivateChatCardClicked(pchat),
+                      child: privateChatCard(pchat),
+                    );
+                  },
+                ),
+              );
+            } else {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 226, 221, 221),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      "No chats",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: const Color.fromARGB(255, 160, 155, 155),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+          } else {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 226, 221, 221),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    "No chats",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 160, 155, 155),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+        }
+
+        return SizedBox();
+      },
+    );
+  }
+
+  Widget privateChatCard(Map<String, dynamic> chat) {
+    int shownUser = chat[PrivateChat.senderIdFk] == user![User.userId]
+        ? chat[PrivateChat.receiverIdFk]
+        : chat[PrivateChat.senderIdFk];
+    return FutureBuilder(
+      future: User.getUserInfo(userid: shownUser),
+      builder: (_, s) {
+        if (s.connectionState == ConnectionState.waiting) {
+          return SizedBox();
+        }
+
+        if (s.connectionState == ConnectionState.done) {
+          if (s.hasData) {
+            final shown = s.data;
+            return Padding(
+              padding: const EdgeInsets.only(
+                bottom: 12,
               ),
-              child: ListTile(
-                leading: CircleAvatar(
-                  radius: 24,
-                  backgroundColor: appTheme.primaryColor,
-                  child: Text("DP"),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                title: Text(
-                  "USERNAME",
-                  style: appTheme.textTheme.titleLarge,
-                ),
-                subtitle: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("LAST CHAT"),
-                    Text("TIME SENT"),
-                  ],
+                child: ListTile(
+                  leading: ClipOval(
+                    child: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: appTheme.primaryColor,
+                      child: shown![User.imgURL] == null
+                          ? Text(shown[User.username][0])
+                          : Image.file(
+                              File(shown[User.imgURL]),
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                  title: Text(
+                    shown[User.username],
+                    style: appTheme.textTheme.titleLarge,
+                  ),
+                  subtitle: lastChatInChatCard(chat[PrivateChat.pChatId]),
                 ),
               ),
-            ),
+            );
+          }
+        }
+
+        return SizedBox();
+      },
+    );
+  }
+
+  Widget lastChatInChatCard(int pChatId) {
+    return FutureBuilder(
+      future: ChatContent.getLastChat(pChatId: pChatId),
+      builder: (_, s) {
+        if (s.connectionState == ConnectionState.waiting) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [Text("Loading...")],
           );
-        },
-      ),
+        }
+
+        if (s.connectionState == ConnectionState.done) {
+          if (s.hasData) {
+            final content = s.data;
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                content![ChatContent.contentType] == "text"
+                    ? Expanded(
+                        child: Text(
+                          user![User.userId] == content[ChatContent.userIdFk]
+                              ? "You: ${content[ChatContent.content]}"
+                              : content[ChatContent.content],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    : Expanded(
+                        child: Text(
+                          user![User.userId] == content[ChatContent.userIdFk]
+                              ? "You: Sent a photo"
+                              : "Sent a photo",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ),
+                Text(
+                  content[ChatContent.chatTime].toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            );
+          }
+        }
+
+        return SizedBox();
+      },
     );
   }
 
@@ -197,6 +349,16 @@ class _CommunityScreenState extends State<CommunityScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => CornerScreen(),
+      ),
+    );
+  }
+
+  managePrivateChatCardClicked(Map<String, dynamic> pchat) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PrivateChatScreen(
+          pchat: pchat,
+        ),
       ),
     );
   }

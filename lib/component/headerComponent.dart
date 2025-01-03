@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:travelmate/screens/mainscreen.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
-PreferredSize header(
-    {required BuildContext context,
-    required String title,
-    required String sub,
-    required Widget action}) {
+PreferredSize header({
+  required BuildContext context,
+  required String title,
+  required String sub,
+  required Widget action,
+  int index = 2,
+}) {
   return PreferredSize(
     preferredSize: Size(MediaQuery.of(context).size.width - 24, 500),
     child: Padding(
@@ -25,7 +28,11 @@ PreferredSize header(
               backgroundColor: appTheme.colorScheme.surfaceContainer,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MainScreen(screenIndex: index),
+                ),
+              );
             },
             icon: Icon(
               Icons.arrow_back_ios_sharp,

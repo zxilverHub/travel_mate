@@ -30,4 +30,15 @@ class Corner {
 
     return corners;
   }
+
+  static Future deleteCorner({required int cornerId}) async {
+    var db = await TravelMateDb.openDb();
+    await db.delete(
+      Corner.tableName,
+      where: "${Corner.cornerId} = ?",
+      whereArgs: [cornerId],
+    );
+
+    print("CORNER DELETED");
+  }
 }

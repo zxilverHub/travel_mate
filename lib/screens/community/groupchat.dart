@@ -7,10 +7,12 @@ import 'package:intl/intl.dart';
 import 'package:travelmate/component/headerComponent.dart';
 import 'package:travelmate/db/chatdb.dart';
 import 'package:travelmate/db/communitydb.dart';
+import 'package:travelmate/db/privatechatdb.dart';
 import 'package:travelmate/db/userdb.dart';
 import 'package:travelmate/helper/imgpath.dart';
 import 'package:travelmate/models/chatmodel.dart';
 import 'package:travelmate/models/sessions.dart';
+import 'package:travelmate/screens/community/privatechatscreen.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
 class GroupChat extends StatefulWidget {
@@ -115,17 +117,7 @@ class _GroupChatState extends State<GroupChat> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        ClipOval(
-          child: CircleAvatar(
-            radius: 20,
-            child: sender[User.imgURL] == null
-                ? Text(sender[User.username][0])
-                : Image.file(
-                    File(sender[User.imgURL]),
-                  ),
-            backgroundColor: appTheme.primaryColor,
-          ),
-        ),
+        personProfile(sender),
         Gap(6),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,6 +161,38 @@ class _GroupChatState extends State<GroupChat> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget personProfile(Map<String, dynamic> sender) {
+    return GestureDetector(
+      onTap: () async {
+        int? pcId;
+        var prChatId = await PrivateChat.checkIfHaveChatHistory(
+            user1: sender[User.userId], user2: user![User.userId]);
+        pcId = prChatId;
+        if (prChatId == null) {
+          pcId = await PrivateChat.addNewPrivateChat(
+              user1: sender[User.userId], user2: user![User.userId]);
+        }
+        var pchat = await PrivateChat.getPrivateChatInfo(pcId: pcId!);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => PrivateChatScreen(pchat: pchat),
+          ),
+        );
+      },
+      child: ClipOval(
+        child: CircleAvatar(
+          radius: 20,
+          child: sender[User.imgURL] == null
+              ? Text(sender[User.username][0])
+              : Image.file(
+                  File(sender[User.imgURL]),
+                ),
+          backgroundColor: appTheme.primaryColor,
+        ),
+      ),
     );
   }
 

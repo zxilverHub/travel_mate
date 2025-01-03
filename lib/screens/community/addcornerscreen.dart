@@ -10,6 +10,7 @@ import 'package:travelmate/db/userdb.dart';
 import 'package:travelmate/helper/imgpath.dart';
 import 'package:travelmate/models/sessions.dart';
 import 'package:travelmate/screens/community/cornerscreen.dart';
+import 'package:travelmate/screens/mainscreen.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
 class AddCorner extends StatefulWidget {

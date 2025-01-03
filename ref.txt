@@ -1,0 +1,14 @@
+        int? pcId;
+        var prChatId = await PrivateChat.checkIfHaveChatHistory(
+            user1: sender[User.userId], user2: user![User.userId]);
+        pcId = prChatId;
+        if (prChatId == null) {
+          pcId = await PrivateChat.addNewPrivateChat(
+              user1: sender[User.userId], user2: user![User.userId]);
+        }
+        var pchat = await PrivateChat.getPrivateChatInfo(pcId: pcId!);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => PrivateChatScreen(pchat: pchat),
+          ),
+        );

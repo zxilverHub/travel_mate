@@ -6,6 +6,7 @@ import 'package:travelmate/db/userdb.dart';
 import 'package:travelmate/models/sessions.dart';
 import 'package:travelmate/models/settings.dart';
 import 'package:travelmate/screens/getstarted.dart';
+import 'package:travelmate/screens/profile/editprofilescreen.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
 class Profile extends StatefulWidget {
@@ -103,8 +104,16 @@ class _ProfileState extends State<Profile> {
                     style: appTheme.textTheme.displayLarge,
                   ),
                 )
-              : Image.file(
-                  File(user![User.imgURL]),
+              : ClipOval(
+                  child: CircleAvatar(
+                    radius: 50,
+                    child: Image.file(
+                      File(user![User.imgURL]),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                  ),
                 ),
           Gap(6),
           Text(
@@ -129,7 +138,8 @@ class _ProfileState extends State<Profile> {
           style: appTheme.textTheme.bodyLarge,
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () => Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => EditProfileScreen())),
           icon: Icon(
             Icons.edit,
             color: Colors.white,

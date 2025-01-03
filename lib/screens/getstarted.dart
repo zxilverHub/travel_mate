@@ -221,11 +221,11 @@ class _GetStartedState extends State<GetStarted> {
   void manageStart() async {
     // remove this Navigator and uncomment the setState
     thisuserid = 1;
-    user = await User.checkAccount(email: "user1@gmail.com", pass: "12345678");
+    user = await User.checkAccount(email: "user2@gmail.com", pass: "12345678");
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => MainScreen(),
+        builder: (_) => MainScreen(screenIndex: 0),
       ),
     );
 

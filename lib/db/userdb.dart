@@ -53,4 +53,24 @@ class User {
 
     return users.first;
   }
+
+  static Future<Map<String, dynamic>> updateUserProfile(
+      {required Map<String, dynamic> user, required int userid}) async {
+    var db = await TravelMateDb.openDb();
+    await db.update(
+      User.tableName,
+      user,
+      where: "${User.userId} = ?",
+      whereArgs: [userid],
+    );
+
+    var users = await db.query(
+      User.tableName,
+      where: "${User.userId} = ?",
+      whereArgs: [userid],
+    );
+
+    print("USER PROFILE UPDATED");
+    return users.first;
+  }
 }

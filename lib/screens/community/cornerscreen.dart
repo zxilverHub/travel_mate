@@ -2,12 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 import 'package:travelmate/component/headerComponent.dart';
+import 'package:travelmate/db/chatcontentdb.dart';
 import 'package:travelmate/db/communitydb.dart';
 import 'package:travelmate/db/cornerdb.dart';
+import 'package:travelmate/db/privatechatdb.dart';
 import 'package:travelmate/db/userdb.dart';
 import 'package:travelmate/models/sessions.dart';
 import 'package:travelmate/screens/community/addcornerscreen.dart';
+import 'package:travelmate/screens/community/privatechatscreen.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
 class CornerScreen extends StatefulWidget {
@@ -94,20 +98,20 @@ class _CornerScreenState extends State<CornerScreen> {
             style: appTheme.textTheme.headlineLarge,
           ),
           Gap(12),
-          cornersList(myCorner),
+          cornersList(myCorner, true),
           Gap(12),
           Text(
             "Community",
             style: appTheme.textTheme.headlineLarge,
           ),
           Gap(12),
-          cornersList(comCorners),
+          cornersList(comCorners, false),
         ],
       ),
     );
   }
 
-  Column cornersList(List<Map<String, dynamic>> corners) {
+  Column cornersList(List<Map<String, dynamic>> corners, bool isUser) {
     if (corners.isEmpty) {
       // Handle the case when corners list is empty
       return Column(
@@ -172,11 +176,18 @@ class _CornerScreenState extends State<CornerScreen> {
                         ),
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              bottom: 6,
+                            ),
                             child: Container(
-                              padding: EdgeInsets.all(8),
+                              padding: EdgeInsets.all(
+                                  cr[Corner.cornerImg] == null ? 8 : 0),
                               decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 243, 240, 240),
+                                color: cr[Corner.cornerImg] == null
+                                    ? Color.fromARGB(255, 243, 240, 240)
+                                    : Colors.transparent,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               width: double.infinity,
@@ -205,6 +216,35 @@ class _CornerScreenState extends State<CornerScreen> {
                               ),
                             ),
                           ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              top: 0,
+                              left: 16,
+                              right: 16,
+                              bottom: 16,
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: const Color.fromARGB(255, 241, 237, 237),
+                              ),
+                              child: ListTile(
+                                onTap: () => manageCornerActionClicked(
+                                  isUser: isUser,
+                                  cornerid: cr[Corner.cornerId],
+                                  uploaderid: cr[Corner.userIdFk],
+                                  cr: cr,
+                                ),
+                                trailing: Icon(Icons.arrow_right),
+                                leading:
+                                    Icon(isUser ? Icons.delete : Icons.chat),
+                                title: Text(
+                                  isUser ? "Delete" : "Response",
+                                  style: appTheme.textTheme.titleLarge,
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -225,6 +265,88 @@ class _CornerScreenState extends State<CornerScreen> {
           },
         );
       }).toList(),
+    );
+  }
+
+  void manageCornerActionClicked({
+    required bool isUser,
+    required int cornerid,
+    required int uploaderid,
+    required Map<String, dynamic> cr,
+  }) async {
+    if (isUser) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(
+            "Delete corner",
+            style: appTheme.textTheme.titleLarge,
+          ),
+          content: Text("Are you to delete this corner?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("No"),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: appTheme.primaryColor,
+                padding: EdgeInsets.all(12),
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                // delete corner
+                Corner.deleteCorner(cornerId: cornerid);
+                Navigator.pop(context);
+                setState(() {});
+              },
+              child: Text("Yes"),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    // response
+    var dateFormat = DateFormat("MMM, d, yyyy");
+    TimeOfDay currentTime = TimeOfDay.now();
+    String formattedTime =
+        '${currentTime.hourOfPeriod}:${currentTime.minute} ${currentTime.period == DayPeriod.am ? 'AM' : 'PM'}';
+
+    int? pcId;
+    var prChatId = await PrivateChat.checkIfHaveChatHistory(
+        user1: uploaderid, user2: user![User.userId]);
+
+    pcId = prChatId;
+    if (prChatId == null) {
+      pcId = await PrivateChat.addNewPrivateChat(
+          user1: uploaderid, user2: user![User.userId]);
+    }
+    var pchat = await PrivateChat.getPrivateChatInfo(pcId: pcId!);
+    await ChatContent.addNewChatContent(content: {
+      ChatContent.pChatIdFk: pcId,
+      ChatContent.contentType: "text",
+      ChatContent.content: cr[Corner.cornerContent],
+      ChatContent.userIdFk: cr[Corner.userIdFk],
+      ChatContent.chatDate: dateFormat.format(DateTime.now()),
+      ChatContent.chatTime: formattedTime,
+    });
+
+    if (cr[Corner.cornerImg] != null) {
+      await ChatContent.addNewChatContent(content: {
+        ChatContent.pChatIdFk: pcId,
+        ChatContent.contentType: "media",
+        ChatContent.content: cr[Corner.cornerImg],
+        ChatContent.userIdFk: cr[Corner.userIdFk],
+        ChatContent.chatDate: dateFormat.format(DateTime.now()),
+        ChatContent.chatTime: formattedTime,
+      });
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PrivateChatScreen(pchat: pchat),
+      ),
     );
   }
 }

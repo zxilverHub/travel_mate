@@ -362,7 +362,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => MainScreen(),
+        builder: (_) => MainScreen(
+          screenIndex: 0,
+        ),
       ),
     );
   }

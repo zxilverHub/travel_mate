@@ -294,7 +294,9 @@ class _LoginpageState extends State<Loginpage> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => MainScreen(),
+        builder: (_) => MainScreen(
+          screenIndex: 0,
+        ),
       ),
     );
   }

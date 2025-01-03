@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:travelmate/db/chatcontentdb.dart';
+import 'package:travelmate/db/privatechatdb.dart';
 import 'package:travelmate/screens/community/community.dart';
 import 'package:travelmate/screens/destination/destination.dart';
 import 'package:travelmate/screens/home/home.dart';
@@ -6,7 +8,9 @@ import 'package:travelmate/screens/notification/notification.dart';
 import 'package:travelmate/screens/profile/profile.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  MainScreen({Key? key, required this.screenIndex}) : super(key: key);
+
+  int screenIndex;
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -14,6 +18,15 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      _selectedIndex = widget.screenIndex;
+    });
+  }
 
   // List of screens for the navigation bar
   final List<Widget> _pages = [
@@ -33,6 +46,16 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   actions: [
+      //     IconButton(
+      //         onPressed: () async {
+      //           await PrivateChat.addDummyChats();
+      //           await ChatContent.addDummyChats();
+      //         },
+      //         icon: Icon(Icons.add))
+      //   ],
+      // ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: navigationBar(),
     );
