@@ -8,6 +8,7 @@ import 'package:travelmate/helper/locationhelper.dart';
 import 'package:travelmate/models/getstartedmodel.dart';
 import 'package:travelmate/models/sessions.dart';
 import 'package:travelmate/screens/mainscreen.dart';
+import 'package:travelmate/screens/registration/signin.dart';
 import 'package:travelmate/screens/registration/signup.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
@@ -36,7 +37,6 @@ class _GetStartedState extends State<GetStarted> {
 
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
-    LocationData _locationData;
 
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -200,7 +200,13 @@ class _GetStartedState extends State<GetStarted> {
               style: appTheme.textTheme.titleSmall,
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => Loginpage(),
+                  ),
+                );
+              },
               child: Text(
                 "Sign in",
                 style: appTheme.textTheme.titleMedium,

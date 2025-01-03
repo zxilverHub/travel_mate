@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:travelmate/db/userdb.dart';
 import 'package:travelmate/models/sessions.dart';
 import 'package:travelmate/models/settings.dart';
+import 'package:travelmate/screens/getstarted.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
 class Profile extends StatefulWidget {
@@ -65,6 +66,7 @@ class _ProfileState extends State<Profile> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ListTile(
+                  onTap: () => manageSettingsCliked(i),
                   leading: Icon(
                     settings[i].icon,
                     color: appTheme.primaryColor,
@@ -124,7 +126,7 @@ class _ProfileState extends State<Profile> {
       children: [
         Text(
           "Profile",
-          style: appTheme.textTheme.headlineMedium,
+          style: appTheme.textTheme.bodyLarge,
         ),
         IconButton(
           onPressed: () {},
@@ -152,6 +154,44 @@ class _ProfileState extends State<Profile> {
           width: double.infinity,
           height: double.infinity,
         ),
+      ),
+    );
+  }
+
+  void manageSettingsCliked(int i) {
+    if (i == 3) {
+      confirmLogOut();
+    }
+  }
+
+  void confirmLogOut() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(
+          "Confirm log out",
+          style: appTheme.textTheme.displaySmall,
+        ),
+        content: Text("Are you sure you want to log out?"),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => GetStarted(),
+                  ),
+                );
+              },
+              child: Text("Yes")),
+          TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: appTheme.primaryColor,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(context),
+            child: Text("No"),
+          ),
+        ],
       ),
     );
   }

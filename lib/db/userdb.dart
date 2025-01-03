@@ -1,4 +1,5 @@
 import 'package:travelmate/db/travelmatedb.dart';
+import 'package:travelmate/models/sessions.dart';
 
 class User {
   static const String tableName = "user";
@@ -38,6 +39,17 @@ class User {
     if (users.isEmpty) {
       return null;
     }
+
+    return users.first;
+  }
+
+  static Future<Map<String, dynamic>> getUserInfo({required int userid}) async {
+    var db = await TravelMateDb.openDb();
+    var users = await db.query(
+      User.tableName,
+      where: "${User.userId} = ?",
+      whereArgs: [userid],
+    );
 
     return users.first;
   }

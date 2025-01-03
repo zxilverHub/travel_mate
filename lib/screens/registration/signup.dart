@@ -63,6 +63,10 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               SizedBox(height: 18),
               TextField(
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0XFF464646),
+                ),
                 controller: usernameCtrl,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -80,6 +84,10 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               SizedBox(height: 18),
               TextField(
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0XFF464646),
+                ),
                 controller: emailCtrl,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -97,6 +105,10 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               SizedBox(height: 18),
               TextField(
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0XFF464646),
+                ),
                 controller: passwordCtrl,
                 obscureText: !isShowPass,
                 decoration: InputDecoration(

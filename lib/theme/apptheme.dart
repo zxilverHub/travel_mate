@@ -6,7 +6,7 @@ const ColorScheme colorPalette = ColorScheme(
   secondary: Color(0xFF2C6CF5),
   secondaryContainer: Color(0xFFFFFFFF),
   surface: Color(0xFFF2F1EC),
-  surfaceBright: Color(0xFFFFFFFF),
+  surfaceBright: Color(0xFFD9D9D9),
   surfaceContainer: Color(0xFFB2B2B2),
   error: Color(0xFFF94143),
   onPrimary: Color(0xFF464646),
@@ -47,7 +47,7 @@ final ThemeData appTheme = ThemeData(
       fontWeight: FontWeight.w600,
     ),
     headlineMedium: TextStyle(
-      color: colorPalette.secondaryContainer,
+      color: colorPalette.onSurface,
       fontSize: 20,
       fontWeight: FontWeight.w600,
     ),
@@ -72,8 +72,9 @@ final ThemeData appTheme = ThemeData(
       fontWeight: FontWeight.w600,
     ),
     bodyLarge: TextStyle(
-      color: colorPalette.onSurface,
-      fontSize: 14,
+      color: colorPalette.secondaryContainer,
+      fontSize: 20,
+      fontWeight: FontWeight.w700,
     ),
     bodyMedium: TextStyle(
       color: colorPalette.onPrimary,
@@ -95,7 +96,7 @@ final ThemeData appTheme = ThemeData(
       fontWeight: FontWeight.w600,
     ),
     labelSmall: TextStyle(
-      color: colorPalette.surfaceContainer,
+      color: colorPalette.secondaryContainer,
       fontSize: 14,
       fontWeight: FontWeight.w600,
     ),

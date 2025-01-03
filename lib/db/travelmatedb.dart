@@ -3,7 +3,7 @@ import 'package:sqflite/sqflite.dart';
 
 class TravelMateDb {
   static const String dbName = "travelmatedb.db";
-  static const int dbVersion = 4;
+  static const int dbVersion = 6;
 
   static Future<Database> openDb() async {
     var path = join(await getDatabasesPath(), dbName);
@@ -22,7 +22,7 @@ class TravelMateDb {
   }
 
   static Future<void> _onCreate(Database db) async {
-    // db.execute("DROP TABLE IF EXISTS user");
+    // db.execute("DROP TABLE IF EXISTS corner");
 
     var sql = '''
     CREATE TABLE IF NOT EXISTS community (
@@ -129,6 +129,21 @@ class TravelMateDb {
       longitude INTEGER NOT NULL,
       altitude INTEGER NOT NULL,
       FOREIGN KEY (soslocid) REFERENCES sos (sosid) ON DELETE CASCADE ON UPDATE CASCADE
+    );
+    ''';
+    await db.execute(sql);
+
+    sql = '''
+    CREATE TABLE IF NOT EXISTS corner (
+      cornerid INTEGER PRIMARY KEY,
+      useridfk INTEGER NOT NULL,
+      comidfk INTEGER NOT NULL,
+      cornercontent TEXT NOT NULL,
+      cornerimg TEXT,
+      corderdate TEXT NOT NULL,
+      cornertime TEXT NOT NULL,
+      FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (comidfk) REFERENCES community (comid) ON DELETE CASCADE ON UPDATE CASCADE
     );
     ''';
     await db.execute(sql);

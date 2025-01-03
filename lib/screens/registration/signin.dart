@@ -60,6 +60,10 @@ class _LoginpageState extends State<Loginpage> {
               ),
               SizedBox(height: 12),
               TextField(
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0XFF464646),
+                ),
                 controller: emailCtrl,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -77,6 +81,10 @@ class _LoginpageState extends State<Loginpage> {
               ),
               SizedBox(height: 18),
               TextField(
+                style: TextStyle(
+                  color: Color(0XFF464646),
+                  fontSize: 14,
+                ),
                 controller: passCtrl,
                 obscureText: !isShowPass,
                 decoration: InputDecoration(
