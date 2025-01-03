@@ -3,7 +3,7 @@ import 'package:sqflite/sqflite.dart';
 
 class TravelMateDb {
   static const String dbName = "travelmatedb.db";
-  static const int dbVersion = 6;
+  static const int dbVersion = 9;
 
   static Future<Database> openDb() async {
     var path = join(await getDatabasesPath(), dbName);
@@ -22,7 +22,8 @@ class TravelMateDb {
   }
 
   static Future<void> _onCreate(Database db) async {
-    // db.execute("DROP TABLE IF EXISTS corner");
+    db.execute("DROP TABLE IF EXISTS temploc");
+    // db.execute("DROP TABLE IF EXISTS notificationcontent");
 
     var sql = '''
     CREATE TABLE IF NOT EXISTS community (
@@ -87,24 +88,15 @@ class TravelMateDb {
     await db.execute(sql);
 
     sql = '''
-    CREATE TABLE IF NOT EXISTS notification (
-      notificationid INTEGER PRIMARY KEY,
-      useridfk INTEGER NOT NULL,
-      FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE
-    );
-    ''';
-    await db.execute(sql);
-
-    sql = '''
     CREATE TABLE IF NOT EXISTS notificationcontent ( -- Corrected name
       notifcontentid INTEGER PRIMARY KEY,
-      notificationidfk INTEGER NOT NULL,
       notiftype TEXT NOT NULL,
       notiftitle TEXT NOT NULL,
       notifcontent TEXT NOT NULL,
       notifdate TEXT NOT NULL, -- Store DATE as TEXT
       notiftime TEXT NOT NULL, -- Store TIME as TEXT
-      FOREIGN KEY (notificationidfk) REFERENCES notification (notificationid) ON DELETE CASCADE ON UPDATE CASCADE
+      useridfk INTEGER NOT NULL,
+      FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE
     );
     ''';
     await db.execute(sql);
@@ -143,6 +135,17 @@ class TravelMateDb {
       corderdate TEXT NOT NULL,
       cornertime TEXT NOT NULL,
       FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (comidfk) REFERENCES community (comid) ON DELETE CASCADE ON UPDATE CASCADE
+    );
+    ''';
+    await db.execute(sql);
+
+    sql = '''
+    CREATE TABLE IF NOT EXISTS temploc (
+      templocid INTEGER PRIMARY KEY,
+      useridfk INTEGER NOT NULL,
+      comidfk INTEGER NOT NULL,
+      FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE
       FOREIGN KEY (comidfk) REFERENCES community (comid) ON DELETE CASCADE ON UPDATE CASCADE
     );
     ''';
