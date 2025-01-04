@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:travelmate/db/travelmatedb.dart';
 import 'package:travelmate/db/userdb.dart';
-import 'package:travelmate/models/sessions.dart';
 
 class NotificationContent {
   static const String tableName = "notificationcontent";
@@ -69,7 +68,8 @@ class NotificationContent {
     print("MARKED AS READ");
   }
 
-  static Future addSosNotifToAllUsers({required int sosid}) async {
+  static Future addSosNotifToAllUsers(
+      {required int sosid, required int uid}) async {
     var db = await TravelMateDb.openDb();
     var users = await db.query(User.tableName);
 
@@ -79,17 +79,19 @@ class NotificationContent {
         '${currentTime.hourOfPeriod}:${currentTime.minute} ${currentTime.period == DayPeriod.am ? 'AM' : 'PM'}';
 
     for (int i = 0; i < users.length; i++) {
-      await NotificationContent.addNewNotification(
-        notif: {
-          NotificationContent.notifType: "sos",
-          NotificationContent.notifTitle: "SOS Alert",
-          NotificationContent.notifContent: "$sosid",
-          NotificationContent.notifDate: dateFormat.format(DateTime.now()),
-          NotificationContent.notifTime: formattedTime,
-          NotificationContent.isread: 0,
-          NotificationContent.useridfk: users[i][User.userId],
-        },
-      );
+      if (uid != users[i][User.userId]) {
+        await NotificationContent.addNewNotification(
+          notif: {
+            NotificationContent.notifType: "sos",
+            NotificationContent.notifTitle: "SOS Alert",
+            NotificationContent.notifContent: "$sosid",
+            NotificationContent.notifDate: dateFormat.format(DateTime.now()),
+            NotificationContent.notifTime: formattedTime,
+            NotificationContent.isread: 0,
+            NotificationContent.useridfk: users[i][User.userId],
+          },
+        );
+      }
     }
 
     print("NOTIF ALERT ADDED");

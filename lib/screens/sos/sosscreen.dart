@@ -100,7 +100,10 @@ class _SosScreenState extends State<SosScreen>
       Sos.longitude: locactionData!.longitude,
     });
 
-    await NotificationContent.addSosNotifToAllUsers(sosid: sosReturedId);
+    await NotificationContent.addSosNotifToAllUsers(
+      sosid: sosReturedId,
+      uid: user![User.userId],
+    );
   }
 
   @override

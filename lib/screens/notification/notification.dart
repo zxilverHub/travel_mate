@@ -247,6 +247,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ],
       ),
     );
+    setState(() {});
   }
 
   Future<void> _launchUrl(_url) async {
