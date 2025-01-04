@@ -186,49 +186,53 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   }
 
   Widget myMsg(Map<String, dynamic> chat, Map<String, dynamic> sender) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: chat[ChatContent.contentType] == "text" ? 300 : 300,
-                  maxHeight: 300,
-                ),
-                child: Container(
-                  padding: EdgeInsets.all(
-                      chat[ChatContent.contentType] == "text" ? 10 : 0),
-                  decoration: BoxDecoration(
-                    color: appTheme.primaryColor,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(25),
-                      topRight: Radius.circular(25),
-                      bottomLeft: Radius.circular(25),
-                    ),
+    return GestureDetector(
+      onLongPress: () => showDeleteModal(chat[ChatContent.contentId]),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth:
+                        chat[ChatContent.contentType] == "text" ? 300 : 300,
+                    maxHeight: 300,
                   ),
-                  child: chat[ChatContent.contentType] == "text"
-                      ? Text(
-                          chat[ChatContent.content],
-                          softWrap: true,
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(
-                            File(chat[ChatContent.content]),
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
+                  child: Container(
+                    padding: EdgeInsets.all(
+                        chat[ChatContent.contentType] == "text" ? 10 : 0),
+                    decoration: BoxDecoration(
+                      color: appTheme.primaryColor,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                        topRight: Radius.circular(25),
+                        bottomLeft: Radius.circular(25),
+                      ),
+                    ),
+                    child: chat[ChatContent.contentType] == "text"
+                        ? Text(
+                            chat[ChatContent.content],
+                            softWrap: true,
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.file(
+                              File(chat[ChatContent.content]),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
                           ),
-                        ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -332,5 +336,75 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     setState(() {
       uploadImgURL = null;
     });
+  }
+
+  void showDeleteModal(int chatid) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 12,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Divider(
+              color: Colors.grey,
+            ),
+            Gap(8),
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                manageDeleteChat(chatid);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 219, 214, 214),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  leading: Icon(Icons.delete),
+                  title: Text("Delete"),
+                  trailing: Icon(Icons.arrow_right),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void manageDeleteChat(int chatid) async {
+    // delete msg
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(
+          "Delete message",
+          style: appTheme.textTheme.titleLarge,
+        ),
+        content: Text("Are you sure to delete message?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("No"),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: appTheme.primaryColor,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () async {
+              await ChatContent.deleteMessage(chatid: chatid);
+              Navigator.pop(context);
+              setState(() {});
+            },
+            child: Text("Yes"),
+          ),
+        ],
+      ),
+    );
   }
 }

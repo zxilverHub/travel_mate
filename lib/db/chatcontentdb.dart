@@ -52,6 +52,17 @@ class ChatContent {
     return chats;
   }
 
+  static Future deleteMessage({required int chatid}) async {
+    var db = await TravelMateDb.openDb();
+    await db.delete(
+      ChatContent.tableName,
+      where: "${ChatContent.contentId} = ?",
+      whereArgs: [chatid],
+    );
+
+    print("CHAT DELETED");
+  }
+
   static Future<Map<String, dynamic>> getLastChat(
       {required int pChatId}) async {
     var db = await TravelMateDb.openDb();

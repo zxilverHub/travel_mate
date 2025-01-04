@@ -3,7 +3,7 @@ import 'package:sqflite/sqflite.dart';
 
 class TravelMateDb {
   static const String dbName = "travelmatedb.db";
-  static const int dbVersion = 9;
+  static const int dbVersion = 11;
 
   static Future<Database> openDb() async {
     var path = join(await getDatabasesPath(), dbName);
@@ -22,8 +22,8 @@ class TravelMateDb {
   }
 
   static Future<void> _onCreate(Database db) async {
-    db.execute("DROP TABLE IF EXISTS temploc");
-    // db.execute("DROP TABLE IF EXISTS notificationcontent");
+    // db.execute("DROP TABLE IF EXISTS sos");
+    // db.execute("DROP TABLE IF EXISTS soslocation");
 
     var sql = '''
     CREATE TABLE IF NOT EXISTS community (
@@ -95,6 +95,7 @@ class TravelMateDb {
       notifcontent TEXT NOT NULL,
       notifdate TEXT NOT NULL, -- Store DATE as TEXT
       notiftime TEXT NOT NULL, -- Store TIME as TEXT
+      isread INTEGER, -- Store TIME as TEXT
       useridfk INTEGER NOT NULL,
       FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE
     );
@@ -108,19 +109,10 @@ class TravelMateDb {
       comidfk INTEGER NOT NULL,
       sosdate TEXT NOT NULL, -- Store DATE as TEXT
       sostime TEXT NOT NULL, -- Store TIME as TEXT
-      FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE,
-      FOREIGN KEY (comidfk) REFERENCES community (comid) ON DELETE CASCADE ON UPDATE CASCADE
-    );
-    ''';
-    await db.execute(sql);
-
-    sql = '''
-    CREATE TABLE IF NOT EXISTS soslocation (
-      soslocid INTEGER PRIMARY KEY,
       latitude INTEGER NOT NULL,
       longitude INTEGER NOT NULL,
-      altitude INTEGER NOT NULL,
-      FOREIGN KEY (soslocid) REFERENCES sos (sosid) ON DELETE CASCADE ON UPDATE CASCADE
+      FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (comidfk) REFERENCES community (comid) ON DELETE CASCADE ON UPDATE CASCADE
     );
     ''';
     await db.execute(sql);

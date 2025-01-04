@@ -61,6 +61,7 @@ Future getPlaceMrk(loc) async {
               "You are in a range of new community ${returnedCom[Community.comStreet]}, ${returnedCom[Community.comCity]}, ${returnedCom[Community.comProvince]}",
           NotificationContent.notifDate: dateFormat.format(DateTime.now()),
           NotificationContent.notifTime: formattedTime,
+          NotificationContent.isread: 0,
           NotificationContent.useridfk: user![User.userId],
         });
       }
@@ -101,6 +102,7 @@ Future getPlaceMrk(loc) async {
             "You are in a range of new community ${returnedCom[Community.comStreet]}, ${returnedCom[Community.comCity]}, ${returnedCom[Community.comProvince]}",
         NotificationContent.notifDate: dateFormat.format(DateTime.now()),
         NotificationContent.notifTime: formattedTime,
+        NotificationContent.isread: 0,
         NotificationContent.useridfk: user![User.userId],
       });
     }

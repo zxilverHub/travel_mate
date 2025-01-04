@@ -56,8 +56,8 @@ class _GetStartedState extends State<GetStarted> {
       }
     }
 
-    location.onLocationChanged.listen((LocationData currentLocation) {
-      getPlaceMrk(currentLocation);
+    location.onLocationChanged.listen((LocationData currentLocation) async {
+      await getPlaceMrk(currentLocation);
       setState(() {
         myLocData = currentLocation;
         locactionData = currentLocation;
@@ -224,7 +224,7 @@ class _GetStartedState extends State<GetStarted> {
     await Temloc.deleteAll();
     // remove this Navigator and uncomment the setState
     thisuserid = 1;
-    user = await User.checkAccount(email: "user3@gmail.com", pass: "12345678");
+    user = await User.checkAccount(email: "user2@gmail.com", pass: "12345678");
 
     Navigator.of(context).push(
       MaterialPageRoute(

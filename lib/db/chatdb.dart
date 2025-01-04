@@ -36,4 +36,15 @@ class Chat {
     await db.delete(Chat.tableName);
     print("DELETED ALL CHATS");
   }
+
+  static Future deleteMessage({required int chatid}) async {
+    var db = await TravelMateDb.openDb();
+    await db.delete(
+      Chat.tableName,
+      where: "${Chat.chatId} = ?",
+      whereArgs: [chatid],
+    );
+
+    print("CHAT DELETED");
+  }
 }

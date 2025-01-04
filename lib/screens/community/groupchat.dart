@@ -47,7 +47,7 @@ class _GroupChatState extends State<GroupChat> {
               future: Chat.fetchAllChatsFromCom(comid: com![Community.comId]),
               builder: (_, s) {
                 if (s.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return Expanded(child: SizedBox());
                 }
 
                 if (s.connectionState == ConnectionState.done) {
@@ -196,47 +196,51 @@ class _GroupChatState extends State<GroupChat> {
     );
   }
 
-  Row myMsg(Map<String, dynamic> chat, Map<String, dynamic> sender) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: chat[Chat.chatType] == "text" ? 300 : 300,
-                maxHeight: 300,
-              ),
-              child: Container(
-                padding: EdgeInsets.all(chat[Chat.chatType] == "text" ? 10 : 0),
-                decoration: BoxDecoration(
-                  color: appTheme.primaryColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                    bottomLeft: Radius.circular(25),
-                  ),
+  Widget myMsg(Map<String, dynamic> chat, Map<String, dynamic> sender) {
+    return GestureDetector(
+      onTap: () => showDeleteModal(chat[Chat.chatId]),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: chat[Chat.chatType] == "text" ? 300 : 300,
+                  maxHeight: 300,
                 ),
-                child: chat[Chat.chatType] == "text"
-                    ? Text(
-                        chat[Chat.chatContent],
-                        softWrap: true,
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          File(chat[Chat.chatContent]),
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
+                child: Container(
+                  padding:
+                      EdgeInsets.all(chat[Chat.chatType] == "text" ? 10 : 0),
+                  decoration: BoxDecoration(
+                    color: appTheme.primaryColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25),
+                      bottomLeft: Radius.circular(25),
+                    ),
+                  ),
+                  child: chat[Chat.chatType] == "text"
+                      ? Text(
+                          chat[Chat.chatContent],
+                          softWrap: true,
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(
+                            File(chat[Chat.chatContent]),
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
                         ),
-                      ),
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -346,5 +350,75 @@ class _GroupChatState extends State<GroupChat> {
     });
 
     setState(() {});
+  }
+
+  void showDeleteModal(int chatid) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 12,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Divider(
+              color: Colors.grey,
+            ),
+            Gap(8),
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                manageDeleteChat(chatid);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 219, 214, 214),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  leading: Icon(Icons.delete),
+                  title: Text("Delete"),
+                  trailing: Icon(Icons.arrow_right),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void manageDeleteChat(int chatid) async {
+    // delete msg
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(
+          "Delete message",
+          style: appTheme.textTheme.titleLarge,
+        ),
+        content: Text("Are you sure to delete message?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("No"),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: appTheme.primaryColor,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () async {
+              await Chat.deleteMessage(chatid: chatid);
+              Navigator.pop(context);
+              setState(() {});
+            },
+            child: Text("Yes"),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -5,6 +5,7 @@ import 'package:travelmate/db/communitydb.dart';
 import 'package:travelmate/db/userdb.dart';
 import 'package:travelmate/helper/locationhelper.dart';
 import 'package:travelmate/models/sessions.dart';
+import 'package:travelmate/screens/sos/sosscreen.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
 class Home extends StatefulWidget {
@@ -86,7 +87,13 @@ class _HomeState extends State<Home> {
                 appTheme.colorScheme.error,
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => SosScreen(),
+                ),
+              );
+            },
             icon: Icon(
               Icons.sos,
               color: appTheme.colorScheme.secondaryContainer,
