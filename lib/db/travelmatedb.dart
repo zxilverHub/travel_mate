@@ -3,7 +3,7 @@ import 'package:sqflite/sqflite.dart';
 
 class TravelMateDb {
   static const String dbName = "travelmatedb.db";
-  static const int dbVersion = 11;
+  static const int dbVersion = 15;
 
   static Future<Database> openDb() async {
     var path = join(await getDatabasesPath(), dbName);
@@ -22,7 +22,7 @@ class TravelMateDb {
   }
 
   static Future<void> _onCreate(Database db) async {
-    // db.execute("DROP TABLE IF EXISTS sos");
+    // db.execute("DROP TABLE IF EXISTS service");
     // db.execute("DROP TABLE IF EXISTS soslocation");
 
     var sql = '''
@@ -137,8 +137,39 @@ class TravelMateDb {
       templocid INTEGER PRIMARY KEY,
       useridfk INTEGER NOT NULL,
       comidfk INTEGER NOT NULL,
-      FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE
+      FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE,
       FOREIGN KEY (comidfk) REFERENCES community (comid) ON DELETE CASCADE ON UPDATE CASCADE
+    );
+    ''';
+    await db.execute(sql);
+
+    sql = '''
+    CREATE TABLE IF NOT EXISTS service (
+      serviceid INTEGER PRIMARY KEY,
+      servicetitle TEXT NOT NULL,
+      servicedesc TEXT NOT NULL,
+      serviceimg TEXT NOT NULL,
+      useridfk INTEGER NOT NULL,
+      comidfk INTEGER NOT NULL,
+      servicelat REAL NOT NULL,
+      servicelng REAL NOT NULL,
+      opentime TEXT NOT NULL,
+      closetime TEXT NOT NULL,
+      FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (comidfk) REFERENCES community (comid) ON DELETE CASCADE ON UPDATE CASCADE
+    );''';
+    await db.execute(sql);
+
+    sql = '''
+    CREATE TABLE IF NOT EXISTS rating (
+      ratingid INTEGER PRIMARY KEY,
+      serviceidfk INTEGER NOT NULL,
+      useridfk INTEGER NOT NULL,
+      comment TEXT,
+      ratedate TEXT,
+      ratetime TEXT,
+      FOREIGN KEY (useridfk) REFERENCES user (userid) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (serviceidfk) REFERENCES service (serviceid) ON DELETE CASCADE ON UPDATE CASCADE
     );
     ''';
     await db.execute(sql);

@@ -6,6 +6,8 @@ import 'package:travelmate/db/communitydb.dart';
 import 'package:travelmate/db/notifcontentdb.dart';
 import 'package:travelmate/db/sosdb.dart';
 import 'package:travelmate/db/userdb.dart';
+import 'package:travelmate/helper/getPlacemarks.dart';
+import 'package:travelmate/helper/locationhelper.dart';
 import 'package:travelmate/models/sessions.dart';
 import 'package:travelmate/screens/community/groupchat.dart';
 import 'package:travelmate/theme/apptheme.dart';
@@ -22,24 +24,51 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: FutureBuilder(
-        future: NotificationContent.getAllUserNotification(
-            userid: user![User.userId]),
-        builder: (_, s) {
-          if (s.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
+      child: com == null || user == null
+          ? Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("No internet connection."),
+                  Gap(12),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await getPlaceMrk(locactionData);
+                      setState(() {});
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.refresh),
+                        Gap(8),
+                        Text("Retry"),
+                      ],
+                    ),
+                  ),
+                  Gap(6),
+                ],
+              ),
+            )
+          : FutureBuilder(
+              future: NotificationContent.getAllUserNotification(
+                  userid: user![User.userId]),
+              builder: (_, s) {
+                if (s.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
 
-          if (s.connectionState == ConnectionState.done) {
-            if (s.hasData) {
-              final notifs = s.data;
-              return notificationContents(notifs);
-            }
-          }
+                if (s.connectionState == ConnectionState.done) {
+                  if (s.hasData) {
+                    final notifs = s.data;
+                    return notificationContents(notifs);
+                  }
+                }
 
-          return Center(child: CircularProgressIndicator());
-        },
-      ),
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
     );
   }
 
@@ -258,7 +287,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   manageViewMap(Map<String, dynamic> sosInfo) async {
     final Uri _url = Uri.parse(
-        "https://www.google.com/maps/search/?api=1&query=${sosInfo[Sos.latitude]}, ${sosInfo[Sos.longitude]}");
+        "https://www.google.com/maps/dir/?api=1&destination=${sosInfo[Sos.latitude]}, ${sosInfo[Sos.longitude]}");
     _launchUrl(_url);
   }
 }

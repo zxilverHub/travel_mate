@@ -33,7 +33,7 @@ final ThemeData appTheme = ThemeData(
     displayLarge: TextStyle(
       height: 1,
       color: colorPalette.onSurface,
-      fontSize: 40,
+      fontSize: 32,
       fontWeight: FontWeight.w800,
     ),
     displaySmall: TextStyle(

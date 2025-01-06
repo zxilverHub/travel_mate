@@ -12,6 +12,7 @@ import 'package:travelmate/db/userdb.dart';
 import 'package:travelmate/helper/imgpath.dart';
 import 'package:travelmate/models/chatmodel.dart';
 import 'package:travelmate/models/sessions.dart';
+import 'package:travelmate/screens/community/comdata.dart';
 import 'package:travelmate/screens/community/privatechatscreen.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
@@ -38,9 +39,18 @@ class _GroupChatState extends State<GroupChat> {
               context: context,
               title: com![Community.comStreet] + " community",
               sub: com![Community.comProvince],
-              action: Image.asset(
-                "assets/images/app/comicon.png",
-                width: 46,
+              action: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ComDataScreen(),
+                    ),
+                  );
+                },
+                child: Image.asset(
+                  "assets/images/app/comicon.png",
+                  width: 46,
+                ),
               ),
             ),
             FutureBuilder(
@@ -198,7 +208,7 @@ class _GroupChatState extends State<GroupChat> {
 
   Widget myMsg(Map<String, dynamic> chat, Map<String, dynamic> sender) {
     return GestureDetector(
-      onTap: () => showDeleteModal(chat[Chat.chatId]),
+      onLongPress: () => showDeleteModal(chat[Chat.chatId]),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

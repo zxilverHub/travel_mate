@@ -20,8 +20,8 @@ List<Settings> settings = [
   ),
   Settings(
     id: 1,
-    label: "Archive",
-    icon: Icons.archive,
+    label: "My service",
+    icon: Icons.support_agent,
   ),
   Settings(
     id: 2,

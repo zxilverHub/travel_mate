@@ -16,6 +16,12 @@ class User {
     return id;
   }
 
+  static Future getAllUserAccount() async {
+    var db = await TravelMateDb.openDb();
+    var acc = await db.query(User.tableName);
+    print(acc);
+  }
+
   static Future isUserExists({required String email}) async {
     var db = await TravelMateDb.openDb();
     var users = await db.query(

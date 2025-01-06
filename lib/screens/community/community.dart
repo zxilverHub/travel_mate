@@ -7,6 +7,8 @@ import 'package:travelmate/db/communitydb.dart';
 import 'package:travelmate/db/cornerdb.dart';
 import 'package:travelmate/db/privatechatdb.dart';
 import 'package:travelmate/db/userdb.dart';
+import 'package:travelmate/helper/getPlacemarks.dart';
+import 'package:travelmate/helper/locationhelper.dart';
 import 'package:travelmate/models/sessions.dart';
 import 'package:travelmate/screens/community/cornerscreen.dart';
 import 'package:travelmate/screens/community/groupchat.dart';
@@ -23,40 +25,67 @@ class CommunityScreen extends StatefulWidget {
 class _CommunityScreenState extends State<CommunityScreen> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned(
-          top: 64,
-          left: 12,
-          right: 12,
-          bottom: 0,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    return com == null || user == null
+        ? Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Gap(32),
+                Text("No internet connection."),
+                Gap(12),
+                ElevatedButton(
+                  onPressed: () async {
+                    await getPlaceMrk(locactionData);
+                    setState(() {});
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.refresh),
+                      Gap(8),
+                      Text("Retry"),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+        : Stack(
             children: [
-              Text(
-                "Community",
-                style: appTheme.textTheme.headlineLarge,
+              Positioned(
+                top: 64,
+                left: 12,
+                right: 12,
+                bottom: 0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      "Community",
+                      style: appTheme.textTheme.headlineLarge,
+                    ),
+                    Gap(12),
+                    GestureDetector(
+                      onTap: handleGroupCardClicked,
+                      child: communityCard(),
+                    ),
+                    Gap(12),
+                    GestureDetector(
+                        onTap: handleCornerCardClicked, child: cornerCard()),
+                    Gap(18),
+                    Text(
+                      "Private chats",
+                      style: appTheme.textTheme.headlineLarge,
+                    ),
+                    Gap(12),
+                    userPrivateChats()
+                  ],
+                ),
               ),
-              Gap(12),
-              GestureDetector(
-                onTap: handleGroupCardClicked,
-                child: communityCard(),
-              ),
-              Gap(12),
-              GestureDetector(
-                  onTap: handleCornerCardClicked, child: cornerCard()),
-              Gap(18),
-              Text(
-                "Private chats",
-                style: appTheme.textTheme.headlineLarge,
-              ),
-              Gap(12),
-              userPrivateChats()
             ],
-          ),
-        ),
-      ],
-    );
+          );
   }
 
   Widget userPrivateChats() {
@@ -285,7 +314,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
         borderRadius: BorderRadius.circular(14),
       ),
       child: ListTile(
-        subtitle: Row(
+        title: Row(
           children: [
             Container(
               padding: EdgeInsets.symmetric(
@@ -318,7 +347,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
             ),
           ],
         ),
-        title: Text(
+        subtitle: Text(
           "${com![Community.comStreet]} community",
           style: appTheme.textTheme.titleLarge,
         ),

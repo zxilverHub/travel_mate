@@ -3,10 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:travelmate/db/userdb.dart';
+import 'package:travelmate/helper/getPlacemarks.dart';
+import 'package:travelmate/helper/locationhelper.dart';
 import 'package:travelmate/models/sessions.dart';
 import 'package:travelmate/models/settings.dart';
 import 'package:travelmate/screens/getstarted.dart';
 import 'package:travelmate/screens/profile/editprofilescreen.dart';
+import 'package:travelmate/screens/profile/myservices.dart';
+import 'package:travelmate/screens/profile/profilesettings.dart';
 import 'package:travelmate/theme/apptheme.dart';
 
 class Profile extends StatefulWidget {
@@ -19,12 +23,39 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        profileBg(),
-        userInfo(),
-      ],
-    );
+    return com == null || user == null
+        ? Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Gap(32),
+                Text("No internet connection."),
+                Gap(12),
+                ElevatedButton(
+                  onPressed: () async {
+                    await getPlaceMrk(locactionData);
+                    setState(() {});
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.refresh),
+                      Gap(8),
+                      Text("Retry"),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+        : Stack(
+            children: [
+              profileBg(),
+              userInfo(),
+            ],
+          );
   }
 
   Positioned userInfo() {
@@ -171,6 +202,18 @@ class _ProfileState extends State<Profile> {
   void manageSettingsCliked(int i) {
     if (i == 3) {
       confirmLogOut();
+    } else if (i == 1) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => MyServices(),
+        ),
+      );
+    } else if (i == 0) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ProfileSettings(),
+        ),
+      );
     }
   }
 

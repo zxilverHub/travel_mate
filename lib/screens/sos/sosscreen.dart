@@ -124,12 +124,13 @@ class _SosScreenState extends State<SosScreen>
                 ],
               ),
               count > 0 ? sosBtn() : activeSOS(),
-              count > 0 ? SizedBox() : cancelSOSBtn(),
               // cancelSOSBtn(),
+              SizedBox(),
               count > 0
                   ? Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Text(
+                        textAlign: TextAlign.center,
                         "Your SOS will be sent to ${com![Community.comStreet]} Community",
                         style: TextStyle(
                           backgroundColor: count > 0
@@ -140,7 +141,7 @@ class _SosScreenState extends State<SosScreen>
                         ),
                       ),
                     )
-                  : SizedBox(),
+                  : cancelSOSBtn(),
             ],
           ),
         ),

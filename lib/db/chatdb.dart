@@ -47,4 +47,15 @@ class Chat {
 
     print("CHAT DELETED");
   }
+
+  static Future<Map<String, dynamic>> getLasChat({required int comid}) async {
+    var db = await TravelMateDb.openDb();
+    var chats = await db.query(
+      Chat.tableName,
+      where: "${Chat.comIdFk} = ?",
+      whereArgs: [comid],
+    );
+
+    return chats.last;
+  }
 }

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:travelmate/db/communitydb.dart';
 import 'package:travelmate/db/cornerdb.dart';
 import 'package:travelmate/db/notifcontentdb.dart';
+import 'package:travelmate/db/servicedb.dart';
 import 'package:travelmate/db/temloddb.dart';
 import 'package:travelmate/db/userdb.dart';
 import 'package:travelmate/helper/locationhelper.dart';
@@ -50,6 +51,9 @@ Future getPlaceMrk(loc) async {
       var returnedCom = await Community.getCommunityInfo(comid: comid);
       com = returnedCom;
 
+      var returnedServices = await ServiceDb.fetchComServices(comid: comid);
+      services = returnedServices;
+
       var returnedCorner = await Corner.fetchAllComCorners(comid: comid);
       corners = returnedCorner;
 
@@ -93,6 +97,9 @@ Future getPlaceMrk(loc) async {
 
     var returnedCorner = await Corner.fetchAllComCorners(comid: isExistsId);
     corners = returnedCorner;
+
+    var returnedServices = await ServiceDb.fetchComServices(comid: isExistsId);
+    services = returnedServices;
 
     if (user != null && isAddNotif) {
       NotificationContent.addNewNotification(notif: {
